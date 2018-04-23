@@ -1,2 +1,2 @@
 # koa-genrate
-一个自定义的koa项目生成器
+一个自定义的koa项目生成器:rocket::rocket:rocket:
