@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const an = require('api-npm');
 
 /**
  * 
@@ -26,7 +27,33 @@ const KoaRouterHelper = (p, d) => {
 //   if (err) throw err;
 // })
 
+const fetchNpmPackageInfo = (package) => {
+  return new Promise((resolve, reject) => {
+    try {
+      an.getdetails(package, (res) => {
+        let result = res['dist-tags']['latest'];
+        let key = package.toString();
+        resolve(result);
+      })
+    } catch (err) {
+      reject(err);
+    }
+  })
+}
+
+const fetchAllNpmPackage = (packagelist) => {
+  let promiseList = packagelist.map(item => {
+    return fetchNpmPackageInfo(item);
+  })
+  return promiseList;
+}
+
+const versionHelper = async (packagelist) => {
+  return Promise.all(fetchAllNpmPackage(packagelist));
+}
+
 module.exports = {
   KoaTemplateHelper,
-  KoaRouterHelper
+  KoaRouterHelper,
+  versionHelper
 }

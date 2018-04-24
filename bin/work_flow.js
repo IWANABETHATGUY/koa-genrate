@@ -2,7 +2,6 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 const path = require('path');
 const child_process = require('child_process');
-
 const helper = require('../utils/index.js');
 
 module.exports = function(p, d) {
@@ -17,7 +16,7 @@ module.exports = function(p, d) {
           choices: ['koa-bodyparser', 'koa-static', 'koa-router', 'koa-views']
         }
       ])
-      .then(answer => {
+      .then(async answer => {
         try {
           process.chdir(`./${d}`);
           child_process.exec('npm init --force', (err) => {
@@ -26,28 +25,37 @@ module.exports = function(p, d) {
               if (err) throw err;
               let packageJson = JSON.parse(data.toString('utf-8'));
               packageJson['dependencies'] = {};
-              packageJson['dependencies']['koa'] = '^2.5.0';
               let middlewares = answer.middlewares;
-              middlewares.forEach(item => {
-                if (item === 'koa-router') {
-                  helper.KoaRouterHelper(p, d);
-                  packageJson['dependencies'][item] = '^7.4.0';
-                } else if (item === 'koa-views') {
-                  helper.KoaTemplateHelper(p, d);
-                  packageJson['dependencies'][item] = '^6.1.4';
-                } else if (item === 'koa-static') {
-                  packageJson['dependencies'][item] = '^4.0.2';
-                } else if (item === 'koa-bodyparser') {
-                  packageJson['dependencies'][item] = '^4.2.0';
-                }
-              })
-              fs.writeFile(
-                path.join(p, d, 'package.json'),
-                JSON.stringify(packageJson, null, 2),
-                'utf8',
-                (err) => {
-                  if (err) throw err;
-              })
+              middlewares.push('koa');
+
+              helper.versionHelper(middlewares)
+                .then(versionsObj => {
+                  middlewares.forEach((item, index) => {
+                    if (item === 'koa-router') {
+                      helper.KoaRouterHelper(p, d);
+                      packageJson['dependencies'][item] = `^${versionsObj[index]}`;
+                    } else if (item === 'koa-views') {
+                      helper.KoaTemplateHelper(p, d);
+                      packageJson['dependencies'][item] = `^${versionsObj[index]}`;
+                    } else if (item === 'koa-static') {
+                      packageJson['dependencies'][item] = `^${versionsObj[index]}`;
+                    } else if (item === 'koa-bodyparser') {
+                      packageJson['dependencies'][item] = `^${versionsObj[index]}`;
+                    } else if (item === 'koa') {
+                      packageJson['dependencies'][item] = `^${versionsObj[index]}`;
+                    }
+                  });
+                  
+                  fs.writeFile(
+                    path.join(p, d, 'package.json'),
+                    JSON.stringify(packageJson, null, 2),
+                    'utf8',
+                    (err) => {
+                      if (err) throw err;
+                  });
+                })
+
+              
             })
           })
         } catch (e) {
