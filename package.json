@@ -15,6 +15,8 @@
     "api-npm": "^1.0.0",
     "commander": "^2.15.1",
     "inquirer": "^5.2.0",
-    "koa-bodyparser": "^4.2.0"
+    "koa-bodyparser": "^4.2.0",
+    "ora": "^2.0.0",
+    "vue-cli": "^2.9.3"
   }
 }

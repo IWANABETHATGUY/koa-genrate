@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const child_process = require('child_process');
 const helper = require('../utils/index.js');
+const ora = require('ora');
+
 
 module.exports = function(p, d) {
   fs.mkdir(path.join(p, d), (err) => {
@@ -18,6 +20,26 @@ module.exports = function(p, d) {
       ])
       .then(async answer => {
         try {
+          const spinner = new ora({
+            text: 'generating...',
+            spinner: {
+              "interval": 80,
+              "frames": [
+                "⠋",
+                "⠙",
+                "⠹",
+                "⠸",
+                "⠼",
+                "⠴",
+                "⠦",
+                "⠧",
+                "⠇",
+                "⠏"
+              ]
+            }
+          })
+          .start();
+          
           process.chdir(`./${d}`);
           child_process.exec('npm init --force', (err) => {
             if (err) throw err;
@@ -27,9 +49,12 @@ module.exports = function(p, d) {
               packageJson['dependencies'] = {};
               let middlewares = answer.middlewares;
               middlewares.push('koa');
+              
+              
 
               helper.versionHelper(middlewares)
                 .then(versionsObj => {
+                  spinner.succeed(`cd ${d} & npm run start to run the server`);
                   middlewares.forEach((item, index) => {
                     if (item === 'koa-router') {
                       helper.KoaRouterHelper(p, d);
@@ -55,7 +80,9 @@ module.exports = function(p, d) {
                       if (err) throw err;
                   });
                 })
-
+                .catch((err) => {
+                  spinner.fail(err);
+                })
               
             })
           })
