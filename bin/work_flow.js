@@ -43,6 +43,7 @@ module.exports = function(p, d) {
                       packageJson['dependencies'][item] = `^${versionsObj[index]}`;
                     } else if (item === 'koa') {
                       packageJson['dependencies'][item] = `^${versionsObj[index]}`;
+                      helper.koaHelper(p, d);
                     }
                   });
                   
