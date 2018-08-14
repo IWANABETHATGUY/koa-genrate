@@ -19,20 +19,4 @@ program
     inq(process.cwd(), dir);
   })
 
-program
-  .command('preview [dir]')
-  .description('实时预览')
-  .action(function(dir) {
-    // console.log(process.cwd());
-    // // console.log('preview %s', dir);
-  })
-
-program
-  .command('build [dir]')
-  .description('生成整站静态html')
-  .option('-o, --output <div>', '生成静态html存放的目录')
-  .action(function(dir, options) {
-    console.log('create %s, output %s', dir, options.output);
-  })
-
 program.parse(process.argv);
