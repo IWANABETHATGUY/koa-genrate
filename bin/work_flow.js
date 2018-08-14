@@ -54,7 +54,7 @@ module.exports = function(p, d) {
 
               helper.versionHelper(middlewares)
                 .then(versionsObj => {
-                  spinner.succeed(`cd ${d} & npm run start to run the server`);
+                  spinner.succeed(`cd ${d} && npm i && npm run start to run the server`);
                   middlewares.forEach((item, index) => {
                     if (item === 'koa-router') {
                       helper.KoaRouterHelper(p, d);
